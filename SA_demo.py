@@ -18,6 +18,7 @@ class Point:
     lat = 0.00   # 纬度
     
 
+
     def __init__(self,address,lon,lat):
         self.address =str(address)
         self.lon = float(lon)
@@ -109,15 +110,16 @@ print ("模拟退火算法查找最短路径：")
 ### 参数：最小路径的最后一个节点和邻域
 def valSimulateAnnealSum(curnode,nextnodeList,t):
     if nextnodeList == None or len(nextnodeList) < 1 :
-        print "empty"
+        print ("empty")
         return 0
 
-    maxcost = sys.maxint
+    maxcost = sys.maxsize
     retnode = 0
 
     for node in nextnodeList:
        # print "curnode : ",curnode ," node: " ,node ," mincost : ",mincost 
-       t *= 50000  ## 退火因子
+       
+        t *= 50000  ## 退火因子
         if arr[curnode][node] < maxcost :
             maxcost = arr[curnode][node]
             retnode = node
@@ -128,7 +130,7 @@ def valSimulateAnnealSum(curnode,nextnodeList,t):
                 #print " t = " ,t , "maxcost = ", maxcost , " arr = " ,arr[curnode][node],   "  exp = ",math.exp((arr[curnode][node] - maxcost)/t)  ,  " r = ",r , "t_min = " ,t_min
                 retnode = node
                 maxcost = arr[curnode][node]
-               return (retnode,maxcost,t) 
+                return (retnode,maxcost,t) 
     return (retnode,maxcost,t)
 
 
@@ -137,52 +139,51 @@ indexList = [ i for i in range(num)]  ### 原始的节点序列
 selectedList = []  ## 选择好的元素
 
 ### 具体思想是： 从剩余的元素中随机选择十分之一的元素，作为邻域。然后从邻域中选择一个元素作为已经构建好的最小路径的下一个节点，使得该路径
-mincost = sys.maxint    ###最小的花费
+mincost = sys.maxsize    ###最小的花费
 
 count = 0  ### 计数器
-t = 100  ## 初始温度
-t_min = 50  ## 最小温度
-while count < num:
+Maxloopnum = 100
+t = 5000  ##  CurrentTemperature-初始温度 
+t_min = 0.1  ## minTemperature最小温度
+
+#coolingrate = 0.01
+while count < min(num,Maxloopnum):
     count += 1
   ### 构建一个邻域: 如果indexList中元素个数大于10个，则取样的个数为剩余元素个数的十分之一。否则为剩余元素个数对10的取余数
-  leftItemNum = len(indexList)
+    leftItemNum = len(indexList)
 #  print "leftItemNum:" ,leftItemNum
-  nextnum = leftItemNum//10  
-    if leftItemNum >= 10 
-    else leftItemNum%10
+    nextnum = leftItemNum//10  if leftItemNum >= 10  else leftItemNum%10
     nextnodeList = sample(indexList,nextnum) ### 从剩余的节点中选出nextnum个节点
   
-  if len(selectedList) == 0 :
-      item = choice(nextnodeList)
-      selectedList.append(item)
-      indexList.remove(item)
-      mincost = 0
-      continue
+    if len(selectedList) == 0 :
+        item = choice(nextnodeList)
+        selectedList.append(item)
+        indexList.remove(item)
+        mincost = 0
+        continue
   
-  curnode = selectedList[len(selectedList) - 1]
+    curnode = selectedList[len(selectedList) - 1]
   # print "nextnodeList:" ,nextnodeList
-  nextnode, maxcost ,t = valSimulateAnnealSum(curnode,nextnodeList,t)   ### 对待选的序列路径求和
-  
-  ### 将返回的路径值添加到原来的路径值上，同时，在剩余的节点序列中，删除nextnode节点
-  mincost += maxcost
-  indexList.remove(nextnode)
-  selectedList.append(nextnode) 
+    nextnode, maxcost ,t = valSimulateAnnealSum(curnode,nextnodeList,t)   ### 对待选的序列路径求和 
+    
+    ### 将返回的路径值添加到原来的路径值上，同时，在剩余的节点序列中，删除nextnode节点
+    mincost += maxcost
+    indexList.remove(nextnode)
+    selectedList.append(nextnode) 
 
-print "最合适的路径为：" ,selectedList 
-print "路径节点个数：" ,len(selectedList)
-print "最小花费为：" , mincost
-print "尝试次数:", count
+print ("最合适的路径为：" ,selectedList )
+print ("路径节点个数：" ,len(selectedList))
+print ("最小花费为：" , mincost)
+print ("尝试次数:", count)
 
 #### 画图 #####
 #plt.figure(1)
-x = []
-y = []
+lon = []
+lat = []
 for i in selectedList :
-    x.append(list[i].x)
-    y.append(list[i].y)
-#plt.plot(x,y)
-#plt.show()
-print "x: ",x
-print "y: " ,y
-
-
+    lon.append(list[i].lon)
+    lat.append(list[i].lat)
+plt.plot(lon,lat)
+plt.show()
+print("lon: ",lon) 
+print("lat: ",lat)
